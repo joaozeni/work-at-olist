@@ -15,6 +15,7 @@ if [[ -z `psql -Atqc "\\list $PGDATABASE"` ]]; then
 fi
 
 # Running database updates
+echo make migrations
 python manage.py makemigrations
 python manage.py migrate
 
