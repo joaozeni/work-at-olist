@@ -14,8 +14,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path
+from django.conf.urls import url, include
+from rest_framework import routers
+from rest_framework_swagger.views import get_swagger_view
+
+from call.views import CallViewSet
+
+router = routers.DefaultRouter()
+router.register(r'calls', CallViewSet)
+
+schema_view = get_swagger_view(title='Calls API')
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-]
+    url(r'^api-docs/', schema_view)
+    # url(r'^', include(router.urls))
+    # path('admin/', admin.site.urls),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += router.urls
