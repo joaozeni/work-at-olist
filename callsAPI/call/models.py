@@ -4,7 +4,8 @@ from django.db import models
 
 
 class Call(models.Model):
-    call_id = models.BigIntegerField(primary_key=True, db_column='call_id')
+    call_id = models.BigIntegerField(
+        primary_key=True, db_column='call_id', blank=False, null=False)
     time_start = models.DateTimeField(
         blank=True, null=True, db_column='time_start')
     time_end = models.DateTimeField(
