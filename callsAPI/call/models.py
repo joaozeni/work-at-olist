@@ -14,6 +14,7 @@ class Call(models.Model):
                               max_length=50, db_column='source')
     destination = models.CharField(
         blank=True, null=True, max_length=50, db_column='destination')
+    call_cost = models.FloatField(blank=True, null=True, db_column='cost')
 
     class Meta:
         managed = True
