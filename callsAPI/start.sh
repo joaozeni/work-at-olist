@@ -22,6 +22,8 @@ python manage.py migrate
 mkdir staticfiles
 python manage.py collectstatic --noinput
 
+python manage.py test
+
 # Start Gunicorn processes
 echo Starting Gunicorn.
 exec gunicorn callsAPI.wsgi:application --reload --bind 0.0.0.0:8000 --workers 3

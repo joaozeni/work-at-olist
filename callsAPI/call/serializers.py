@@ -8,8 +8,8 @@ class CallSerializer(serializers.Serializer):
     call_id = serializers.IntegerField(required=True)
     timestamp = serializers.DateTimeField()
     type = serializers.CharField()
-    source = serializers.CharField()
-    destination = serializers.CharField()
+    source = serializers.CharField(required=False)
+    destination = serializers.CharField(required=False)
 
     def create(self, validated_data):
         processed_data = {}
