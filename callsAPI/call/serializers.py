@@ -1,4 +1,5 @@
 import traceback
+import datetime
 
 from rest_framework import serializers
 from call.models import Call
@@ -55,5 +56,14 @@ class CallSerializer(serializers.Serializer):
             raise serializers.ValidationError("Start aready inserted for this call_id")
         elif self.initial_data['type'].upper() == 'END' and call.time_end is not None:
             raise serializers.ValidationError("Start aready inserted for this call_id")
+
+        if call.time_end is not None and \
+                call.time_end.replace(tzinfo=None) < datetime.datetime.strptime(self.initial_data['timestamp'],
+                                                                                "%Y-%m-%d %H:%M:%S"):
+            raise serializers.ValidationError("Start time must be lower that end")
+        elif call.time_start is not None and \
+                call.time_start.replace(tzinfo=None) > datetime.datetime.strptime(self.initial_data['timestamp'],
+                                                                                  "%Y-%m-%d %H:%M:%S"):
+            raise serializers.ValidationError("End time must be higher that start")
 
         return value
