@@ -15,9 +15,15 @@ if [[ -z `psql -Atqc "\\list $PGDATABASE"` ]]; then
 fi
 
 # Running database updates
+echo make migrations
 python manage.py makemigrations
 python manage.py migrate
 
+mkdir staticfiles
+python manage.py collectstatic --noinput
+
+python manage.py test
+
 # Start Gunicorn processes
 echo Starting Gunicorn.
-exec gunicorn callsAPI.wsgi:application --bind 0.0.0.0:8000 --workers 3
+exec gunicorn callsAPI.wsgi:application --reload --bind 0.0.0.0:8000 --workers 3

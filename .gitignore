@@ -7,3 +7,6 @@
 *.log
 .env
 tmp
+.vscode
+static
+staticfiles
