@@ -22,7 +22,7 @@ python manage.py migrate
 mkdir staticfiles
 python manage.py collectstatic --noinput
 
-python manage.py test
+python manage.py test --noinput
 
 # Start Gunicorn processes
 echo Starting Gunicorn.
