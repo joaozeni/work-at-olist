@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+pip install -r requirements.txt
+
 # Wait until Postgres is ready
 while ! pg_isready -q -h $PGHOST -p $PGPORT -U $PGUSER
 do
