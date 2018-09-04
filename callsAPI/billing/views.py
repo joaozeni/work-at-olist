@@ -31,5 +31,4 @@ class BillingViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         q_set = self.get_queryset(kwargs['pk'])
-        print(BillingSerializer(q_set, many=True).data)
         return Response(BillingSerializer(q_set, many=True).data, status=status.HTTP_200_OK)

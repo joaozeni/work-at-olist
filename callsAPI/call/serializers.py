@@ -86,10 +86,19 @@ class CallSerializer(serializers.Serializer):
         return value
 
     def calculate_cost(self, time_start, time_end):
-        if (time_start.hour >= 22 and time_start.hour <= 6) and (time_end.hour >= 22 and time_end.hour <= 6):
+        if (time_start.hour >= 22 or time_start.hour < 6) and (time_end.hour >= 22 or time_end.hour < 6):
             return 0.36
 
-        difference = int(abs((time_end.replace(tzinfo=pytz.UTC) - time_start.replace(tzinfo=pytz.UTC))
+        correct_time_end = time_end
+        correct_time_start = time_start
+
+        if (time_start.hour <= 22 and time_start.hour > 6) and (time_end.hour >= 22 or time_end.hour < 6):
+            correct_time_end = datetime.datetime(time_end.year, time_end.month, time_end.day, 22, 0, 0)
+
+        if (time_start.hour >= 22 or time_start.hour < 6) and (time_end.hour >= 6 and time_end.hour < 22):
+            correct_time_start = datetime.datetime(time_start.year, time_start.month, time_start.day, 6, 0, 0)
+
+        difference = int(abs((correct_time_end.replace(tzinfo=pytz.UTC) - correct_time_start.replace(tzinfo=pytz.UTC))
                              .seconds))
         difference = difference/60
-        return ((difference*0.09) + 0.36)
+        return (difference*0.09) + 0.36
