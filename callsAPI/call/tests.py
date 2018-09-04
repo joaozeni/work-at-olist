@@ -29,6 +29,7 @@ class CallAPIViewTestCase(APITestCase):
         self.assertEqual(call.source, '48999990000')
         self.assertEqual(call.destination, '48999990001')
         self.assertEqual(call.time_end, None)
+        self.assertEqual(call.call_cost, None)
 
     def test_insert_end(self):
         response = self.client.post(self.url, self.end_data, format='json')
@@ -40,6 +41,7 @@ class CallAPIViewTestCase(APITestCase):
         self.assertEqual(call.source, None)
         self.assertEqual(call.destination, None)
         self.assertEqual(call.time_end.strftime("%Y-%m-%d %H:%M:%S"), self.time_end)
+        self.assertEqual(call.call_cost, None)
 
     def test_insert_start_end(self):
         response = self.client.post(self.url, self.start_data, format='json')
@@ -53,6 +55,7 @@ class CallAPIViewTestCase(APITestCase):
         self.assertEqual(call.source, '48999990000')
         self.assertEqual(call.destination, '48999990001')
         self.assertEqual(call.time_end.strftime("%Y-%m-%d %H:%M:%S"), self.time_end)
+        self.assertEqual(call.call_cost, 1.26)
 
     def test_insert_end_start(self):
         response = self.client.post(self.url, self.end_data, format='json')
@@ -66,6 +69,7 @@ class CallAPIViewTestCase(APITestCase):
         self.assertEqual(call.source, '48999990000')
         self.assertEqual(call.destination, '48999990001')
         self.assertEqual(call.time_end.strftime("%Y-%m-%d %H:%M:%S"), self.time_end)
+        self.assertEqual(call.call_cost, 1.26)
 
     def test_insert_start_start(self):
         response = self.client.post(self.url, self.start_data, format='json')
