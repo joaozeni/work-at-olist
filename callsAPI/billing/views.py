@@ -26,7 +26,7 @@ class BillingViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         except:
             return Response('The period should be in the {mm}/{yyyy} format', status=status.HTTP_400_BAD_REQUEST)
 
-        return Call.objects.filter(source=pk).filter(time_start__month=month).filter(time_start__year=year).\
+        return Call.objects.filter(source=pk).filter(time_end__month=month).filter(time_end__year=year).\
             exclude(time_end__isnull=True)
 
     def retrieve(self, request, *args, **kwargs):
