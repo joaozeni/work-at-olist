@@ -20,6 +20,20 @@ class BillingViewTestCase(APITestCase):
                     destination=self.destination, call_cost=self.call_cost)
         call.save()
 
+    def test_get_billing_without_end(self):
+        time_start_3 = datetime.datetime(2018, 8, 2, 22, 0, 0).strftime("%Y-%m-%dT%H:%M:%SZ")
+        call_id_3 = 82
+        source_3 = "48999990001"
+        destination_3 = "48999990002"
+        call_cost_3 = 11.0
+        call_2 = Call(call_id=call_id_3, time_start=time_start_3, source=source_3, destination=destination_3,
+                      call_cost=call_cost_3)
+        call_2.save()
+        response = self.client.get(self.url.format(source=source_3), params={'period':'08/2018'})
+        json_r = response.json()
+
+        self.assertEqual(len(json_r), 0)
+
     def test_get_billing_with_one(self):
         response = self.client.get(self.url.format(source=self.source), params={'period':'08/2018'})
         json_r = response.json()[0]
