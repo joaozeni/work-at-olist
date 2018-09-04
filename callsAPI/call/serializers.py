@@ -1,5 +1,6 @@
 import traceback
 import datetime
+import pytz
 
 from rest_framework import serializers
 from call.models import Call
@@ -11,6 +12,7 @@ class CallSerializer(serializers.Serializer):
     type = serializers.CharField()
     source = serializers.CharField(required=False)
     destination = serializers.CharField(required=False)
+    call_cost = serializers.FloatField(required=False)
 
     def create(self, validated_data):
         processed_data = {}
@@ -23,6 +25,8 @@ class CallSerializer(serializers.Serializer):
             processed_data['time_start'] = validated_data.get('timestamp')
         elif validated_data.get('type').upper() == 'END':
             processed_data['time_end'] = validated_data.get('timestamp')
+
+        processed_data['call_cost'] = validated_data.get('call_cost')
 
         try:
             instance, created = Call.objects.update_or_create(call_id=validated_data.get('call_id'), defaults=processed_data)
@@ -66,4 +70,35 @@ class CallSerializer(serializers.Serializer):
                                                                                   "%Y-%m-%d %H:%M:%S"):
             raise serializers.ValidationError("End time must be higher that start")
 
+        if self.initial_data.get('call_cost'):
+            raise serializers.ValidationError("Call cost is calculated by the system")
+
+        if self.initial_data['type'].upper() == 'START' and call.time_end is not None:
+            self.initial_data['call_cost'] = self.calculate_cost(datetime.datetime.strptime(
+                self.initial_data['timestamp'], "%Y-%m-%d %H:%M:%S"), call.time_end)
+        elif self.initial_data['type'].upper() == 'END' and call.time_start is not None:
+            self.initial_data['call_cost'] = self.calculate_cost(call.time_start,
+                                                                 datetime.datetime.strptime(
+                                                                     self.initial_data['timestamp'],
+                                                                     "%Y-%m-%d %H:%M:%S")
+                                                                 )
+
         return value
+
+    def calculate_cost(self, time_start, time_end):
+        if (time_start.hour >= 22 or time_start.hour < 6) and (time_end.hour >= 22 or time_end.hour < 6):
+            return 0.36
+
+        correct_time_end = time_end
+        correct_time_start = time_start
+
+        if (time_start.hour <= 22 and time_start.hour > 6) and (time_end.hour >= 22 or time_end.hour < 6):
+            correct_time_end = datetime.datetime(time_end.year, time_end.month, time_end.day, 22, 0, 0)
+
+        if (time_start.hour >= 22 or time_start.hour < 6) and (time_end.hour >= 6 and time_end.hour < 22):
+            correct_time_start = datetime.datetime(time_start.year, time_start.month, time_start.day, 6, 0, 0)
+
+        difference = int(abs((correct_time_end.replace(tzinfo=pytz.UTC) - correct_time_start.replace(tzinfo=pytz.UTC))
+                             .seconds))
+        difference = difference/60
+        return (difference*0.09) + 0.36
